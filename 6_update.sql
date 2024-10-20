@@ -3,7 +3,7 @@
 
 UPDATE order1 o
 SET comments = concat('(s)', comments)
-WHERE o.employee_id IN (SELECT e.employee_id FROM employee e WHERE e.spec = 'student')
+WHERE o.employee_id IN (SELECT e.employee_id FROM employee e WHERE e.spec = 'student');
 
 -- RESULT:
 -- | order\_id | owner\_id | service\_id | pet\_id | employee\_id | time\_order | is\_done | mark | comments |
@@ -38,7 +38,7 @@ WHERE o.employee_id IN (SELECT e.employee_id FROM employee e WHERE e.spec = 'stu
 DELETE
 FROM order1 o
 WHERE o.service_id IN (SELECT s.service_id FROM service s WHERE s.name = 'Combing')
-  AND o.is_done = 0
+  AND o.is_done = 0;
 
 -- RESULT AFTER REMOVE
 -- postgres.public> DELETE
@@ -86,7 +86,7 @@ VALUES (11, 'passport', '102030'),
 -- Изменение Person_ID
 UPDATE person p
 SET Person_ID=322
-WHERE p.last_name = 'Pavlushkin'
+WHERE p.last_name = 'Pavlushkin';
 
 -- Результат в Document
 -- | document\_id | person\_id | doc\_type | doc\_number |
