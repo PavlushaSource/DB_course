@@ -51,3 +51,52 @@ WHERE o.service_id IN (SELECT s.service_id FROM service s WHERE s.name = 'Combin
 -- Напишите оператор, добавляющий в таблицу PERSON новое физическое
 -- лицо с сохранением последовательной нумерации записей
 -- (используйте вложенный select с “max(…) + 1”).
+
+INSERT INTO Person(Person_ID, Last_Name, First_Name, Phone, Address)
+VALUES ((SELECT MAX(Person_ID) + 1 FROM Person),
+        'Pavlushkin',
+        'Dmitrii',
+        '+88005553535',
+        'Pushkina, Dom Kolotushkina');
+
+-- Создайте в базе новую таблицу для хранения данных о документах физ.лиц (вид и номер документа).
+-- При создании связи от нее к таблице PERSON укажите свойства каскадности редактирования и удаления.
+
+CREATE TABLE IF NOT EXISTS Document
+(
+    Document_ID SERIAL,
+    Person_ID   INT,
+    Doc_type    VARCHAR(20) NOT NULL,
+    Doc_number  VARCHAR(20) NOT NULL,
+    CONSTRAINT Document_PK PRIMARY KEY (Document_ID)
+);
+
+ALTER TABLE
+    Document
+    ADD
+        CONSTRAINT FK_Document_Person FOREIGN KEY (Person_ID) REFERENCES Person (Person_ID)
+            ON UPDATE CASCADE ON DELETE CASCADE;
+
+-- Добавьте в нее пару документов для только что созданного нового физ.лица.
+INSERT INTO Document (Person_ID, Doc_type, Doc_number)
+VALUES (11, 'passport', '102030'),
+       (11, 'driving_licence', '112233'),
+       (11, 'SNILS', '332211');
+
+-- Изменение Person_ID
+UPDATE person p
+SET Person_ID=322
+WHERE p.last_name = 'Pavlushkin'
+
+-- Результат в Document
+-- | document\_id | person\_id | doc\_type | doc\_number |
+-- | :--- | :--- | :--- | :--- |
+-- | 1 | 322 | passport | 102030 |
+-- | 2 | 322 | driving\_licence | 112233 |
+-- | 3 | 322 | SNILS | 332211 |
+
+DELETE
+FROM person p
+WHERE p.last_name = 'Pavlushkin'
+
+-- Таблица Document стала пустой из-за каскада
